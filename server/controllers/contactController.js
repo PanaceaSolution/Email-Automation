@@ -4,13 +4,10 @@ import nodemailer from "nodemailer";
 
 export const email = async (req, res) => {
   const { name, email, message } = req.body;
-  // console.log(name, email); correct
-
-  const keyword = detectKeyword(message);
-
-  // console.log(keyword); correct
-
-  const emailContent = generateEmailContent(keyword);
+  console.log(req.body);
+ 
+const keyword = detectKeyword(message);
+const emailContent = generateEmailContent(keyword);
 
   await sendEmail(email, emailContent);
 
@@ -25,14 +22,15 @@ export const email = async (req, res) => {
     message: "Message received successfull",
   });
 
-  function detectKeyword() {
+  function detectKeyword(message) {
+    console.log(message);
     const keywords = ["job", "vacancy", "internship"];
     for (const keyword of keywords) {
-      if (keyword.toLowerCase().includes(keyword)) {
+      if (message.toLowerCase().includes(keyword)) {
         return keyword;
       }
     }
-    return "Normal";
+    return "general";
   }
 
   function generateEmailContent(keyword) {
@@ -42,6 +40,14 @@ export const email = async (req, res) => {
       ? "Thanks for the internship application. We will contact you asap"
       : keyword === "vacancy"
       ? "Thanks for your curiousity in this vacancy. We will contact you later"
+      : keyword === "job" && "vacancy"
+      ? "Thanks for curious in both job and vacancy. We will contact you later"
+      : keyword === "job" && "intership"
+      ? "Thanks for curious in both job and internship. We will contact you later"
+      : keyword === "internship" && "vacancy"
+      ? "Thanks for curious in both internship and vacancy. We will contact you later"
+      : keyword === "job" && "vacancy" &&"internship"
+      ? "Thanks for curious in all the events . We will contact you later"
       : "Thanks for your application . We will contact you later";
   }
 
@@ -50,28 +56,25 @@ export const email = async (req, res) => {
     // let testAcc = await nodemailer.createTestAccount();
     let transporter = nodemailer.createTransport({
       service: 'gmail',
-      // host:'smtp.gmail.com',
-      // host:'smtp.ethereal.email',
-      // port:587,
+      host:'smtp.gmail.com',
+      port:587,
       auth: {
         user: process.env.USER_EMAIL,
         pass: process.env.USER_PASS,
-        // user:testAcc.user,
-        // pass:testAcc.pass,
       },
-      // secure:false,
+      secure:false,
     });
     // console.log(transporter);
 
 
     //this will send back the mail from where the mail came, and its sent the subject as well as the related content based on the keyword
     let mailOptions = {
-      from: process.env.USER_EMAIL,
+      from:process.env.USER_EMAIL,
       to,
       subject: "Thanks for contacting with us",
-      text: content,
+      message: content,
     };
-    //  console.log(mailOptions);
+     console.log(mailOptions);
     await transporter.sendMail(mailOptions);
   }
  async function logToExcel({ name, email, message, keyword }) {
@@ -89,7 +92,9 @@ export const email = async (req, res) => {
    sheet.addRow([
      name,
      email,
+     "",
      message,
+     "", 
      keyword,
      new Date().toLocaleDateString(),
    ]);
