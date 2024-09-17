@@ -38,14 +38,6 @@ const emailContent = generateEmailContent(keyword);
       ? "Thanks for the internship application. We will contact you asap"
       : keyword === "vacancy"
       ? "Thanks for your curiousity in this vacancy. We will contact you later"
-      : keyword === "job" && "vacancy"
-      ? "Thanks for curious in both job and vacancy. We will contact you later"
-      : keyword === "job" && "internship"
-      ? "Thanks for curious in both job and internship. We will contact you later"
-      : keyword === "internship" && "vacancy"
-      ? "Thanks for curious in both internship and vacancy. We will contact you later"
-      : keyword === "job" && "vacancy" && "internship"
-      ? "Thanks for curious in all the events . We will contact you later"
       : "Thanks for your application . We will contact you later";
   }
 
