@@ -4,7 +4,6 @@ import nodemailer from "nodemailer";
 
 export const email = async (req, res) => {
   const { name, email, message } = req.body;
-  console.log(req.body);
  
 const keyword = detectKeyword(message);
 const emailContent = generateEmailContent(keyword);
@@ -23,7 +22,6 @@ const emailContent = generateEmailContent(keyword);
   });
 
   function detectKeyword(message) {
-    console.log(message);
     const keywords = ["job", "vacancy", "internship"];
     for (const keyword of keywords) {
       if (message.toLowerCase().includes(keyword)) {
@@ -53,7 +51,6 @@ const emailContent = generateEmailContent(keyword);
 
   
   async function sendEmail(to, content) {
-    // let testAcc = await nodemailer.createTestAccount();
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       host:'smtp.gmail.com',
@@ -64,7 +61,6 @@ const emailContent = generateEmailContent(keyword);
       },
       secure:false,
     });
-    // console.log(transporter);
 
 
     //this will send back the mail from where the mail came, and its sent the subject as well as the related content based on the keyword
