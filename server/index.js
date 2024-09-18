@@ -15,7 +15,7 @@ const sendEmail = async ({ to, subject, html, attachments }) => {
   const transporter = nodemailer.createTransport(nodemailerConfig);
 
   return transporter.sendMail({
-    from: '"Your Company" <your_email@gmail.com>',
+    from: process.env.EMAIL_USER,
     to,
     subject,
     html,
