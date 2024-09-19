@@ -1,9 +1,9 @@
+const fs = require("fs");
+const path = require("path");
 const nodemailer = require("nodemailer");
-const { UserData } = require("../models/user.js");
 const { responses } = require("../response.js");
 
 async function handleEmail(req, res) {
-  // Validate request body
   if (!req.body || !req.body.name || !req.body.email || !req.body.text) {
     return res
       .status(400)
@@ -12,19 +12,39 @@ async function handleEmail(req, res) {
 
   const { name, email, text } = req.body;
 
-  // Save to database
+  const directory = path.join(__dirname, "..", "files");
+  const filePath = path.join(directory, "data.csv");
+
   try {
-    const result = await UserData.create({
-      name,
-      email,
-      text,
-    });
-    console.log("Successfully saved to DB");
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory, { recursive: true }); // Create the directory if it doesn't exist
+    }
   } catch (err) {
-    console.error("Error while saving to DB:", err);
+    console.error("Error creating directory:", err);
     return res
       .status(500)
-      .json({ msg: "Error while saving to DB", error: err.message });
+      .send({ status: "error", message: "Directory creation failed" });
+  }
+
+  try {
+    const fileExists = fs.existsSync(filePath);
+    const csvHeaders = "S no.,Name,Email Id,Message\n"; // CSV headers
+
+    if (!fileExists) {
+      fs.writeFileSync(filePath, csvHeaders);
+    }
+
+    const lastRowNumber = fs.readFileSync(filePath, "utf-8").split("\n").length - 2; // Count rows excluding headers
+    const newRow = `${lastRowNumber + 1},${name},${email},${text}\n`;
+
+    fs.appendFileSync(filePath, newRow);
+
+    console.log("Data successfully appended to CSV file.");
+  } catch (err) {
+    console.error("Error while handling CSV file:", err);
+    return res
+      .status(500)
+      .send({ status: "error", message: "Something went wrong with the CSV file" });
   }
 
   // Nodemailer setup

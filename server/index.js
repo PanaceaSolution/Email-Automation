@@ -1,10 +1,8 @@
 const express = require("express");
-const { connectMongoDB } = require("./config/connection");
 
 const { handleEmail } = require("./controllers/nodemailer");
 
 const app = express();
-connectMongoDB("mongodb://127.0.0.1:27017/Email-Automation");
 
 require("dotenv").config();
 app.use(express.urlencoded({ extended: true }));
